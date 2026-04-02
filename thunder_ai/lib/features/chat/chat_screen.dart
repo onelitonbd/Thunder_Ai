@@ -38,29 +38,43 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     // Try to load from Firebase first
     try {
       final firestoreService = ref.read(firestoreServiceProvider);
-      firestoreService.getChatMessages(widget.chatId).listen((messages) {
-        if (mounted) {
-          setState(() {
-            _messages = messages;
-            _isLoadingMessages = false;
-          });
-          
-          // Scroll to bottom after loading
-          Future.delayed(const Duration(milliseconds: 100), () {
-            _scrollToBottom();
-          });
-        }
-      });
+      firestoreService.getChatMessages(widget.chatId).listen(
+        (messages) {
+          if (mounted) {
+            setState(() {
+              _messages = messages;
+              _isLoadingMessages = false;
+            });
+            
+            // Scroll to bottom after loading
+            Future.delayed(const Duration(milliseconds: 100), () {
+              _scrollToBottom();
+            });
+          }
+        },
+        onError: (error) {
+          debugPrint('Error loading messages: $error');
+          if (mounted) {
+            setState(() {
+              _messages = MockData.getMockMessages(widget.chatId);
+              _isLoadingMessages = false;
+            });
+          }
+        },
+      );
     } catch (e) {
+      debugPrint('Firebase error: $e');
       // Fallback to mock data if Firebase fails
-      setState(() {
-        _messages = MockData.getMockMessages(widget.chatId);
-        _isLoadingMessages = false;
-      });
-      
-      Future.delayed(const Duration(milliseconds: 100), () {
-        _scrollToBottom();
-      });
+      if (mounted) {
+        setState(() {
+          _messages = MockData.getMockMessages(widget.chatId);
+          _isLoadingMessages = false;
+        });
+        
+        Future.delayed(const Duration(milliseconds: 100), () {
+          _scrollToBottom();
+        });
+      }
     }
   }
 

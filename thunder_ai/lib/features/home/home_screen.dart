@@ -14,7 +14,7 @@ class HomeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Watch real Firebase data
+    // Watch real Firebase data with error handling
     final chatsAsync = ref.watch(userChatsProvider);
 
     return MainScaffold(
@@ -48,7 +48,7 @@ class HomeScreen extends ConsumerWidget {
           color: Colors.transparent,
           child: InkWell(
             onTap: () async {
-              // Create new chat
+              // Create new chat with error handling
               try {
                 final firestoreService = ref.read(firestoreServiceProvider);
                 final userId = ref.read(currentUserIdProvider);
@@ -69,9 +69,13 @@ class HomeScreen extends ConsumerWidget {
                   );
                 }
               } catch (e) {
+                debugPrint('Error creating chat: $e');
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Error creating chat: $e')),
+                    SnackBar(
+                      content: Text('Error: ${e.toString()}'),
+                      backgroundColor: Colors.red,
+                    ),
                   );
                 }
               }

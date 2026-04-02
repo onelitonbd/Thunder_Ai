@@ -1,31 +1,41 @@
 import 'package:google_generative_ai/google_generative_ai.dart';
+import 'package:flutter/foundation.dart';
 import '../core/constants/app_config.dart';
 
 class GeminiService {
-  late final GenerativeModel _model;
+  GenerativeModel? _model;
+  bool _isConfigured = false;
   
   GeminiService() {
-    if (!AppConfig.isGeminiConfigured) {
-      throw Exception(
-        'Gemini API key not configured. Please add your API key in lib/core/constants/app_config.dart',
-      );
+    try {
+      if (AppConfig.isGeminiConfigured) {
+        _model = GenerativeModel(
+          model: AppConfig.geminiModel,
+          apiKey: AppConfig.geminiApiKey,
+          generationConfig: GenerationConfig(
+            temperature: AppConfig.temperature,
+            maxOutputTokens: AppConfig.maxTokens,
+          ),
+        );
+        _isConfigured = true;
+        debugPrint('✅ Gemini AI configured successfully');
+      } else {
+        debugPrint('⚠️ Gemini API key not configured');
+      }
+    } catch (e) {
+      debugPrint('❌ Gemini initialization error: $e');
     }
-    
-    _model = GenerativeModel(
-      model: AppConfig.geminiModel,
-      apiKey: AppConfig.geminiApiKey,
-      generationConfig: GenerationConfig(
-        temperature: AppConfig.temperature,
-        maxOutputTokens: AppConfig.maxTokens,
-      ),
-    );
   }
 
   /// Generate a response from Gemini AI
   Future<String> generateResponse(String prompt) async {
+    if (!_isConfigured || _model == null) {
+      return 'Gemini AI is not configured. Please add your API key in lib/core/constants/app_config.dart';
+    }
+    
     try {
       final content = [Content.text(prompt)];
-      final response = await _model.generateContent(content);
+      final response = await _model!.generateContent(content);
       
       if (response.text == null || response.text!.isEmpty) {
         throw Exception('Empty response from Gemini');
@@ -33,15 +43,21 @@ class GeminiService {
       
       return response.text!;
     } catch (e) {
-      throw Exception('Failed to generate response: $e');
+      debugPrint('Gemini error: $e');
+      return 'Error generating response: ${e.toString()}\n\nPlease check your API key and internet connection.';
     }
   }
 
   /// Generate a streaming response from Gemini AI
   Stream<String> generateStreamResponse(String prompt) async* {
+    if (!_isConfigured || _model == null) {
+      yield 'Gemini AI is not configured.';
+      return;
+    }
+    
     try {
       final content = [Content.text(prompt)];
-      final response = _model.generateContentStream(content);
+      final response = _model!.generateContentStream(content);
       
       await for (final chunk in response) {
         if (chunk.text != null && chunk.text!.isNotEmpty) {
@@ -49,7 +65,8 @@ class GeminiService {
         }
       }
     } catch (e) {
-      throw Exception('Failed to generate streaming response: $e');
+      debugPrint('Gemini streaming error: $e');
+      yield 'Error: ${e.toString()}';
     }
   }
 
@@ -58,6 +75,10 @@ class GeminiService {
     List<Map<String, String>> conversationHistory,
     String newMessage,
   ) async {
+    if (!_isConfigured || _model == null) {
+      return 'Gemini AI is not configured. Please add your API key.';
+    }
+    
     try {
       // Build conversation context
       final contextPrompt = StringBuffer();
@@ -73,12 +94,21 @@ class GeminiService {
       
       return await generateResponse(contextPrompt.toString());
     } catch (e) {
-      throw Exception('Failed to generate chat response: $e');
+      debugPrint('Chat response error: $e');
+      return 'Error: ${e.toString()}';
     }
   }
 
   /// Generate a title for a chat based on the first message
   Future<String> generateChatTitle(String firstMessage) async {
+    if (!_isConfigured || _model == null) {
+      // Fallback to simple title generation
+      return firstMessage.split('\n').first.substring(
+            0,
+            firstMessage.length > 50 ? 50 : firstMessage.length,
+          );
+    }
+    
     try {
       final prompt = '''
 Generate a short, concise title (maximum 6 words) for a chat conversation that starts with this message:
@@ -91,6 +121,7 @@ Return ONLY the title, nothing else. No quotes, no punctuation at the end.
       final response = await generateResponse(prompt);
       return response.trim();
     } catch (e) {
+      debugPrint('Title generation error: $e');
       // Fallback to simple title generation
       return firstMessage.split('\n').first.substring(
             0,

@@ -12,14 +12,15 @@ import 'features/settings/settings_screen.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
-  // Initialize Firebase
+  // Initialize Firebase with error handling
   try {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
+    debugPrint('✅ Firebase initialized successfully');
   } catch (e) {
-    debugPrint('Firebase initialization error: $e');
-    // Continue anyway for development
+    debugPrint('⚠️ Firebase initialization error: $e');
+    // App will continue without Firebase for now
   }
   
   runApp(const ProviderScope(child: ThunderAiApp()));
