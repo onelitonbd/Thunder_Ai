@@ -46,15 +46,18 @@ class _MessageInputFieldState extends State<MessageInputField> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
       decoration: BoxDecoration(
         color: isDark ? AppColorsDark.surface : AppColorsLight.surface,
-        border: Border(
-          top: BorderSide(
-            color: isDark ? AppColorsDark.divider : AppColorsLight.divider,
-            width: 0.5,
+        boxShadow: [
+          BoxShadow(
+            color: isDark
+                ? Colors.black.withOpacity(0.3)
+                : Colors.black.withOpacity(0.06),
+            blurRadius: 12,
+            offset: const Offset(0, -2),
           ),
-        ),
+        ],
       ),
       child: SafeArea(
         child: Row(
@@ -107,16 +110,39 @@ class _MessageInputFieldState extends State<MessageInputField> {
               duration: const Duration(milliseconds: 200),
               child: _hasText
                   ? Container(
+                      width: 48,
+                      height: 48,
                       decoration: BoxDecoration(
-                        color: isDark
-                            ? AppColorsDark.primary
-                            : AppColorsLight.primary,
-                        shape: BoxShape.circle,
+                        gradient: LinearGradient(
+                          colors: isDark
+                              ? [
+                                  AppColorsDark.primary,
+                                  AppColorsDark.accent,
+                                ]
+                              : [
+                                  AppColorsLight.primary,
+                                  AppColorsLight.accent,
+                                ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(24),
+                        boxShadow: [
+                          BoxShadow(
+                            color: (isDark
+                                    ? AppColorsDark.primary
+                                    : AppColorsLight.primary)
+                                .withOpacity(0.4),
+                            blurRadius: 12,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
                       ),
                       child: IconButton(
                         icon: const Icon(
-                          Icons.send,
+                          Icons.send_rounded,
                           color: Colors.white,
+                          size: 20,
                         ),
                         onPressed: _sendMessage,
                       ),

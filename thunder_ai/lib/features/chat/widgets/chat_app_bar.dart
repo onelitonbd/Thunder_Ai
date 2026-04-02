@@ -21,25 +21,37 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
 
     return AppBar(
       leading: IconButton(
-        icon: const Icon(Icons.arrow_back),
+        icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
         onPressed: onBackPressed ?? () => Navigator.of(context).pop(),
       ),
       title: Row(
         children: [
-          // AI Avatar
+          // AI Avatar with gradient
           Container(
-            width: 36,
-            height: 36,
+            width: 40,
+            height: 40,
             decoration: BoxDecoration(
-              color: isDark
-                  ? AppColorsDark.primary.withOpacity(0.2)
-                  : AppColorsLight.primary.withOpacity(0.1),
-              shape: BoxShape.circle,
+              gradient: LinearGradient(
+                colors: isDark
+                    ? [AppColorsDark.primary, AppColorsDark.accent]
+                    : [AppColorsLight.primary, AppColorsLight.accent],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: (isDark ? AppColorsDark.primary : AppColorsLight.primary)
+                      .withOpacity(0.3),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
             ),
-            child: Icon(
-              Icons.bolt,
-              color: isDark ? AppColorsDark.primary : AppColorsLight.primary,
-              size: 20,
+            child: const Icon(
+              Icons.bolt_rounded,
+              color: Colors.white,
+              size: 22,
             ),
           ),
           const SizedBox(width: 12),

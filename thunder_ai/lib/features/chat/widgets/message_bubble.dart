@@ -22,22 +22,46 @@ class MessageBubble extends StatelessWidget {
       alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
         margin: EdgeInsets.only(
-          left: isUser ? 64 : 8,
-          right: isUser ? 8 : 64,
-          top: 4,
-          bottom: 4,
+          left: isUser ? 80 : 12,
+          right: isUser ? 12 : 80,
+          top: 6,
+          bottom: 6,
         ),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
+          gradient: isUser
+              ? LinearGradient(
+                  colors: isDark
+                      ? [
+                          AppColorsDark.userBubbleStart,
+                          AppColorsDark.userBubbleEnd,
+                        ]
+                      : [
+                          AppColorsLight.userBubbleStart,
+                          AppColorsLight.userBubbleEnd,
+                        ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                )
+              : null,
           color: isUser
-              ? (isDark ? AppColorsDark.userBubble : AppColorsLight.userBubble)
+              ? null
               : (isDark ? AppColorsDark.aiBubble : AppColorsLight.aiBubble),
           borderRadius: BorderRadius.only(
-            topLeft: const Radius.circular(18),
-            topRight: const Radius.circular(18),
-            bottomLeft: Radius.circular(isUser ? 18 : 4),
-            bottomRight: Radius.circular(isUser ? 4 : 18),
+            topLeft: const Radius.circular(20),
+            topRight: const Radius.circular(20),
+            bottomLeft: Radius.circular(isUser ? 20 : 4),
+            bottomRight: Radius.circular(isUser ? 4 : 20),
           ),
+          boxShadow: [
+            BoxShadow(
+              color: isDark
+                  ? Colors.black.withOpacity(0.3)
+                  : Colors.black.withOpacity(0.08),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

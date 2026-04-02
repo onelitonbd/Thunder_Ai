@@ -15,16 +15,13 @@ class TimeGroupHeader extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      color: isDark
-          ? AppColorsDark.backgroundSecondary
-          : AppColorsLight.backgroundSecondary,
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       child: Text(
-        label,
+        label.toUpperCase(),
         style: AppTextStyles.timeGroupHeader.copyWith(
           color: isDark
-              ? AppColorsDark.textSecondary
-              : AppColorsLight.textSecondary,
+              ? AppColorsDark.textTertiary
+              : AppColorsLight.textTertiary,
         ),
       ),
     );

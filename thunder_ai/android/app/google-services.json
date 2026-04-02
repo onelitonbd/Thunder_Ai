@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "490027679730",
+    "project_id": "thunderaibd",
+    "storage_bucket": "thunderaibd.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:490027679730:android:5b9bf430474efe5c11356b",
+        "android_client_info": {
+          "package_name": "com.thunder.thunder_ai"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBYAuHJpes20CWMCyK9PhE7A0tnv_oY1lw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

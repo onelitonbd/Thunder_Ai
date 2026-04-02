@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../providers/chat_provider.dart';
 import '../../core/utils/time_grouping_util.dart';
+import '../../core/theme/app_colors.dart';
 import '../chat/chat_screen.dart';
 import 'widgets/main_scaffold.dart';
 import 'widgets/chat_tile.dart';
@@ -17,37 +18,77 @@ class HomeScreen extends ConsumerWidget {
     final chatsAsync = ref.watch(userChatsProvider);
 
     return MainScaffold(
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          // Create new chat
-          try {
-            final firestoreService = ref.read(firestoreServiceProvider);
-            final userId = ref.read(currentUserIdProvider);
-            
-            final chatId = await firestoreService.createChat(
-              userId: userId,
-              title: 'New Chat',
-              lastMessage: '',
-            );
-            
-            // Navigate to new chat
-            if (context.mounted) {
-              ref.read(selectedChatIdProvider.notifier).state = chatId;
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => ChatScreen(chatId: chatId),
-                ),
-              );
-            }
-          } catch (e) {
-            if (context.mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Error creating chat: $e')),
-              );
-            }
-          }
-        },
-        child: const Icon(Icons.add),
+      floatingActionButton: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Theme.of(context).brightness == Brightness.dark
+                  ? AppColorsDark.primary
+                  : AppColorsLight.primary,
+              Theme.of(context).brightness == Brightness.dark
+                  ? AppColorsDark.accent
+                  : AppColorsLight.accent,
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: (Theme.of(context).brightness == Brightness.dark
+                      ? AppColorsDark.primary
+                      : AppColorsLight.primary)
+                  .withOpacity(0.4),
+              blurRadius: 16,
+              offset: const Offset(0, 6),
+            ),
+          ],
+        ),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: () async {
+              // Create new chat
+              try {
+                final firestoreService = ref.read(firestoreServiceProvider);
+                final userId = ref.read(currentUserIdProvider);
+                
+                final chatId = await firestoreService.createChat(
+                  userId: userId,
+                  title: 'New Chat',
+                  lastMessage: '',
+                );
+                
+                // Navigate to new chat
+                if (context.mounted) {
+                  ref.read(selectedChatIdProvider.notifier).state = chatId;
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => ChatScreen(chatId: chatId),
+                    ),
+                  );
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Error creating chat: $e')),
+                  );
+                }
+              }
+            },
+            borderRadius: BorderRadius.circular(16),
+            child: Container(
+              width: 56,
+              height: 56,
+              alignment: Alignment.center,
+              child: const Icon(
+                Icons.add_rounded,
+                color: Colors.white,
+                size: 28,
+              ),
+            ),
+          ),
+        ),
       ),
       child: Scaffold(
         appBar: AppBar(
