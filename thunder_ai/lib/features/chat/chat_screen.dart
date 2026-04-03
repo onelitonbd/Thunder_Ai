@@ -35,10 +35,13 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   }
 
   void _loadMessages() async {
+    // Get current user ID
+    final userId = ref.read(currentUserIdProvider);
+    
     // Try to load from Firebase first
     try {
       final firestoreService = ref.read(firestoreServiceProvider);
-      firestoreService.getChatMessages(widget.chatId).listen(
+      firestoreService.getChatMessages(userId, widget.chatId).listen(
         (messages) {
           if (mounted) {
             setState(() {
@@ -96,10 +99,12 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
   void _handleSendMessage(String text) async {
     final firestoreService = ref.read(firestoreServiceProvider);
+    final userId = ref.read(currentUserIdProvider);
     
     try {
       // Save user message to Firebase
       await firestoreService.addMessage(
+        userId: userId,
         chatId: widget.chatId,
         sender: 'user',
         text: text,
@@ -131,6 +136,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       
       // Save AI message to Firebase
       await firestoreService.addMessage(
+        userId: userId,
         chatId: widget.chatId,
         sender: 'ai',
         text: aiResponseText,
@@ -141,7 +147,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       if (_messages.length <= 2) {
         try {
           final title = await geminiService.generateChatTitle(text);
-          await firestoreService.updateChatTitle(widget.chatId, title);
+          await firestoreService.updateChatTitle(userId, widget.chatId, title);
         } catch (e) {
           // Ignore title generation errors
         }
@@ -154,6 +160,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     } catch (e) {
       // Show error in chat
       await firestoreService.addMessage(
+        userId: userId,
         chatId: widget.chatId,
         sender: 'ai',
         text: 'Sorry, I encountered an error: ${e.toString()}\n\nPlease check:\n1. Your Gemini API key in `app_config.dart`\n2. Your Firebase configuration\n3. Your internet connection',

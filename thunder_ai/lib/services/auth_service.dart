@@ -1,10 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter/foundation.dart';
+import 'firestore_service.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
+  final FirestoreService _firestoreService = FirestoreService();
 
   // Get current user
   User? get currentUser => _auth.currentUser;
@@ -49,6 +51,15 @@ class AuthService {
       await credential.user?.updateDisplayName(name);
       await credential.user?.reload();
       
+      // Create user profile in Firestore
+      if (credential.user != null) {
+        await _firestoreService.createUserProfile(
+          userId: credential.user!.uid,
+          email: email,
+          displayName: name,
+        );
+      }
+      
       debugPrint('✅ Signed up: ${credential.user?.email}');
       return credential;
     } on FirebaseAuthException catch (e) {
@@ -82,6 +93,17 @@ class AuthService {
 
       // Sign in to Firebase with the Google credential
       final userCredential = await _auth.signInWithCredential(credential);
+      
+      // Create or update user profile in Firestore
+      if (userCredential.user != null) {
+        await _firestoreService.createUserProfile(
+          userId: userCredential.user!.uid,
+          email: userCredential.user!.email ?? '',
+          displayName: userCredential.user!.displayName,
+          photoUrl: userCredential.user!.photoURL,
+        );
+      }
+      
       debugPrint('✅ Google sign in: ${userCredential.user?.email}');
       return userCredential;
     } catch (e) {

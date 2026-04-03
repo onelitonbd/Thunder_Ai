@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "490027679730",
+    "firebase_url": "https://thunderaibd-default-rtdb.asia-southeast1.firebasedatabase.app",
     "project_id": "thunderaibd",
     "storage_bucket": "thunderaibd.firebasestorage.app"
   },
@@ -12,7 +13,20 @@
           "package_name": "com.thunder.thunder_ai"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "490027679730-81k8ihao7bgqlokqpsmeb9qaqv4haimu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.thunder.thunder_ai",
+            "certificate_hash": "ad906e2611e09e644ba5a50a718d1f968cfb88ab"
+          }
+        },
+        {
+          "client_id": "490027679730-5eh2fsfkeh6241ein40fh0rrq0n4t7sq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBYAuHJpes20CWMCyK9PhE7A0tnv_oY1lw"
@@ -20,7 +34,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "490027679730-5eh2fsfkeh6241ein40fh0rrq0n4t7sq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

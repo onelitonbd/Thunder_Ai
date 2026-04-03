@@ -38,7 +38,8 @@ final groupedChatsProvider = Provider<List<GroupedChats>>((ref) {
 // Stream of messages for a specific chat
 final chatMessagesProvider = StreamProvider.family<List<Message>, String>((ref, chatId) {
   final firestoreService = ref.watch(firestoreServiceProvider);
-  return firestoreService.getChatMessages(chatId);
+  final userId = ref.watch(currentUserIdProvider);
+  return firestoreService.getChatMessages(userId, chatId);
 });
 
 // Selected chat ID provider
