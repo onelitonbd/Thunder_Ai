@@ -4,6 +4,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'core/theme/app_theme.dart';
 import 'providers/theme_provider.dart';
+import 'providers/auth_provider.dart';
+import 'features/auth/welcome_screen.dart';
 import 'features/home/home_screen.dart';
 import 'features/home/widgets/main_scaffold.dart';
 import 'features/profile/profile_screen.dart';
@@ -42,7 +44,39 @@ class ThunderAiApp extends ConsumerWidget {
       darkTheme: AppTheme.darkTheme,
       themeMode: themeMode,
       
-      home: const MainNavigator(),
+      home: const AuthWrapper(),
+    );
+  }
+}
+
+// Auth wrapper to handle authentication state
+class AuthWrapper extends ConsumerWidget {
+  const AuthWrapper({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final authState = ref.watch(authStateProvider);
+
+    return authState.when(
+      data: (user) {
+        if (user != null) {
+          // User is signed in, show main app
+          return const MainNavigator();
+        } else {
+          // User is not signed in, show welcome screen
+          return const WelcomeScreen();
+        }
+      },
+      loading: () => const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      ),
+      error: (error, stack) {
+        debugPrint('Auth error: $error');
+        // Show welcome screen on error
+        return const WelcomeScreen();
+      },
     );
   }
 }

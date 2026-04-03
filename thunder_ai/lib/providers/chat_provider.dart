@@ -4,15 +4,17 @@ import '../models/chat.dart';
 import '../models/grouped_chats.dart';
 import '../models/message.dart';
 import '../core/utils/time_grouping_util.dart';
+import 'auth_provider.dart';
 
 // Firestore service provider
 final firestoreServiceProvider = Provider<FirestoreService>((ref) {
   return FirestoreService();
 });
 
-// Current user ID provider (temporary - will be replaced with Firebase Auth)
-final currentUserIdProvider = StateProvider<String>((ref) {
-  return 'demo_user'; // Placeholder until we implement auth
+// Current user ID provider (from Firebase Auth)
+final currentUserIdProvider = Provider<String>((ref) {
+  final user = ref.watch(currentUserProvider);
+  return user?.uid ?? 'demo_user';
 });
 
 // Stream of all user chats
