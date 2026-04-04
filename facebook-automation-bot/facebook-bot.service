@@ -1,0 +1,16 @@
+[Unit]
+Description=Facebook Automation Bot
+After=network.target
+
+[Service]
+Type=simple
+User=your_username
+WorkingDirectory=/path/to/facebook-automation-bot
+ExecStart=/usr/bin/python3 /path/to/facebook-automation-bot/bot.py
+Restart=always
+RestartSec=10
+Environment="PATH=/usr/bin:/usr/local/bin"
+EnvironmentFile=/path/to/facebook-automation-bot/.env
+
+[Install]
+WantedBy=multi-user.target
